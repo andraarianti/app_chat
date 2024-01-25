@@ -2,10 +2,15 @@ import 'package:app_chat/data/repository/ChatRepository.dart';
 
 import '../entities/User.dart';
 
-class GetUserChat{
+class GetUserChat {
   var repository = ChatRepository();
 
   Future<User> execute(String username) async {
-    return repository.getUserData(username);
+    try {
+      return repository.getUserData(username);
+    } catch (e) {
+      print('[UseCases-ChatUser] Error fetching user data: $e');
+      rethrow;
+    }
   }
 }

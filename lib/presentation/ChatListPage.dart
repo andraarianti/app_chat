@@ -1,4 +1,5 @@
 import 'package:app_chat/domain/entities/User.dart';
+import 'package:app_chat/domain/usecases/GetChatList.dart';
 import 'package:app_chat/domain/usecases/GetChatUser.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class ChatListPage extends StatefulWidget{
 }
 
 class _ChatListStatePage extends State<ChatListPage>{
-  late Future<Map<String, dynamic>> chatRooms;
+  late Future<List<String>> chatRooms;
 
   @override
   void initState() {
@@ -34,43 +35,77 @@ class _ChatListStatePage extends State<ChatListPage>{
         height: 500,
         child: FutureBuilder<User>(
           future: GetUserChat().execute(widget.username),
-          builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.waiting){
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError || snapshot.hasData) {
-              String errorMessage =
-                  snapshot.error?.toString() ?? 'Unknown error';
-              return Center(child: Text('${errorMessage}'));
-            } else {
+            } else if (snapshot.hasError) {
+              String errorMessage = snapshot.error?.toString() ?? 'Unknown error';
+              return Center(child: Text('error on ChatListPage ${errorMessage}'));
+            } else if (snapshot.hasData) {
               final user = snapshot.data!;
-              final username = user.username;
-              final roomIds = snapshot.data!;
-              return FutureBuilder<Map<String, dynamic>>(
-                future: chatRooms,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError || !snapshot.hasData) {
-                    String errorMessage =
-                        snapshot.error?.toString() ?? 'Unknown error';
-                    return Center(child: Text('${errorMessage}'));
-                  } else {
-                    final roomIds = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: roomIds.length,
-                      itemBuilder: (context, index) {
-                        // Use roomIds[index] to display information or fetch additional data if needed
-                        return ListTile(
-                          title: Text(roomIds[index]),
-                          onTap: () {
-
-                          },
-                        );
-                      },
+              final rooms = user.rooms; // untuk get data rooms
+              return ListView.builder(
+                  itemCount: rooms.length,
+                  itemBuilder: (context, index){
+                    return ListTile(
+                      title: Text(rooms[index]),
                     );
                   }
-                },
               );
+              // return (Text(user.rooms[0]));
+              // return ListView.builder(
+              //   itemCount: user.rooms.length,
+              //   itemBuilder: (context, index){
+              //     final roomId = user.rooms[index];
+              //     return FutureBuilder(
+              //         future: GetChatList().execute(roomId),
+              //         builder: (context, chatRoomSnapshot) {
+              //           if (chatRoomSnapshot.connectionState == ConnectionState.waiting){
+              //             return ListTile(
+              //               title: Text(roomId),
+              //               subtitle: Text('Loading...'),
+              //               onTap: () {
+              //                 // Handle onTap as needed
+              //               },
+              //             );
+              //           } else if (chatRoomSnapshot.hasError) {
+              //             print('${chatRoomSnapshot}');
+              //             print('Error loading chat room data for room $roomId: ${chatRoomSnapshot.error}');
+              //             return ListTile(
+              //               title: Text(roomId),
+              //               subtitle: Text('Error loading chat room data'),
+              //               onTap: () {
+              //                 // Handle onTap as needed
+              //               },
+              //             );
+              //           } else if (!chatRoomSnapshot.hasData) {
+              //             print('No data available for chat room $roomId');
+              //             return ListTile(
+              //               title: Text(roomId),
+              //               subtitle: Text('No data available for chat room'),
+              //               onTap: () {
+              //                 // Handle onTap as needed
+              //               },
+              //             );
+              //           } else {
+              //             final chatRoom = chatRoomSnapshot.data!;
+              //             final opponentUsers = chatRoom.users.where((user) => user.username != widget.username).toList();
+              //
+              //             return ListTile(
+              //               title: Text(roomId),
+              //               subtitle: Text('Opponents: ${opponentUsers.map((user) => user.username).join(', ')}'),
+              //               onTap: () {
+              //                 // Handle onTap as needed
+              //               },
+              //             );
+              //           }
+              //         }
+              //     );
+              //   },
+              // );
+            }
+            else{
+              return Center(child: Text('Unknown Error'),);
             }
           },
         ),

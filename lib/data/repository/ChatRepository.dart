@@ -1,14 +1,23 @@
 import 'dart:convert';
 
-import 'package:app_chat/data/datasource/ChatDataSource.dart';
-import 'package:app_chat/domain/entities/User.dart';
+import '../../domain/entities/ChatRoom.dart';
+import '../../domain/entities/User.dart';
+import '../datasource/ChatDataSource.dart';
 
 class ChatRepository {
   var remoteChatDataSource = RemoteChatDataSource();
 
   Future<User> getUserData(String username) async {
-    var jsonResponse = jsonDecode(await remoteChatDataSource.getUserData(username))['data'];
-    User user = User.fromJson(jsonResponse as Map<String, dynamic>); //
-    return user; // Added return statement
+    var jsonArray = jsonDecode(await remoteChatDataSource.getUserData(username))['data'];
+    User user = User.fromJson(jsonArray);
+    print('${jsonArray}');
+    return user;
+  }
+
+  Future<ChatRoom> getChatData(String id) async {
+    var jsonArray = jsonDecode(await remoteChatDataSource.getChatData(id))['data'];
+    ChatRoom chatRoom = ChatRoom.fromJson(jsonArray);
+    print('${jsonArray}');
+    return chatRoom;
   }
 }
