@@ -24,26 +24,32 @@
 // }
 
 import 'package:app_chat/domain/entities/ChatMessage.dart';
-import 'package:app_chat/domain/entities/User.dart';
 
-class ChatRoom{
-  String id;
-  List<User> users;
+class ChatList{
+  List<String> users;
   List<Message> messages;
 
-  ChatRoom({required this.id, required this.users, required this.messages});
+  ChatList({required this.users, required this.messages});
 
-  factory ChatRoom.fromJson(Map<String, dynamic> json) {
-    List<User> users = (json['users'] as List<dynamic>).map((userData) {
-      return User.fromJson(userData);
-    }).toList();
+  factory ChatList.fromJson(Map<String, dynamic> json) {
+    print('Entities Chatlist : $json');
+    print('Coba username : ${json['users'][0]}');
+    print('Coba messages : ${json['messages'][0]}');
 
-    List<Message> messages = (json['messages'] as List<dynamic>).map((messageData) {
-      return Message.fromJson(messageData);
-    }).toList();
+    var users = <String>[];
+    for (var i = 0; i < json['users'].length; i++){
+      users.add(json['users'][i]);
+      print('User $i : ${json['users'][i]}');
+    }
 
-    return ChatRoom(
-      id: json['id'],
+    var messages = <Message>[];
+    for (var i = 0; i < json['messages'].length; i++){
+      print('Message $i : ${json['messages'][i]}');
+      messages.add(Message.fromJson(json['messages'][i]));
+      print('Message $i : ${json['messages'][i]}');
+    }
+    
+    return ChatList(
       users: users,
       messages: messages,
     );

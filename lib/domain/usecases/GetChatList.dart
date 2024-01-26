@@ -1,22 +1,16 @@
-
-import 'dart:convert';
 import 'package:app_chat/data/repository/ChatRepository.dart';
-import 'package:http/http.dart' as http;
 
-import '../entities/ChatRoom.dart';
+import '../entities/ChatList.dart';
 
-
-final URL = 'http://127.0.0.1:8080';
 
 class GetChatList {
-  late String username;
-  late final ChatRepository repository;
+  var repository = ChatRepository();
 
-  Future<ChatRoom> execute(String id) async {
+  Future<ChatList> execute(String id) async {
     try {
-      return repository.getChatData(id);
+      return repository.getChatList(id);
     } catch (e) {
-      print('[UseCases-ChatList] Error fetching user data: $e');
+      print('[UseCases-ChatList] Error : $e');
       rethrow;
     }
   }

@@ -1,49 +1,69 @@
 
+import 'package:app_chat/domain/entities/ChatList.dart';
+import 'package:app_chat/domain/usecases/GetChatList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ChatRoom extends StatefulWidget{
+class ChatMessagePage extends StatefulWidget{
+  final String id;
+  final String username;
+
+  ChatMessagePage({required this.id, required this.username});
+
   @override
-  State<ChatRoom> createState() => _ChatRoomState();
+  _ChatMessagePageState createState() => _ChatMessagePageState();
 }
 
-class _ChatRoomState extends State<ChatRoom>{
-  TextEditingController _chatController = TextEditingController();
+class _ChatMessagePageState extends State<ChatMessagePage>{
+  TextEditingController _messageController = TextEditingController();
+
+  late Future<ChatList> chatMessage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    chatMessage = GetChatList().execute(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Room'),
+        title: Text('Room : ${widget.id}'),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Card(
-                      child: Text('Nama', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                Expanded(
-                    child: TextField(
-                      controller: _chatController,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message ....'
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+                      // FutureBuilder<>(future: future, builder: builder)
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            decoration: InputDecoration(
+                              hintText: 'Type a message ....'
+                            ),
+                          ),
                       ),
-                    ),
-                ),
-                IconButton(
-                    onPressed: (){
+                      IconButton(
+                          onPressed: (){
 
-                    },
-                    icon: Icon(Icons.add)
-                )
-              ],
+                          },
+                          icon: Icon(Icons.send)
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           )
         ],

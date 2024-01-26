@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../domain/entities/ChatRoom.dart';
+import '../../domain/entities/ChatList.dart';
 import '../../domain/entities/User.dart';
 import '../datasource/ChatDataSource.dart';
 
@@ -10,14 +10,14 @@ class ChatRepository {
   Future<User> getUserData(String username) async {
     var jsonArray = jsonDecode(await remoteChatDataSource.getUserData(username))['data'];
     User user = User.fromJson(jsonArray);
-    print('${jsonArray}');
     return user;
   }
 
-  Future<ChatRoom> getChatData(String id) async {
-    var jsonArray = jsonDecode(await remoteChatDataSource.getChatData(id))['data'];
-    ChatRoom chatRoom = ChatRoom.fromJson(jsonArray);
-    print('${jsonArray}');
-    return chatRoom;
+  Future<ChatList> getChatList(String id) async {
+    var jsonArray = jsonDecode(await remoteChatDataSource.getChatList(id))['data'];
+    print('Server Response : $jsonArray');
+    ChatList chatList = ChatList.fromJson(jsonArray);
+    print('GET JSON [REPOSITORY] : ${chatList}');
+    return chatList;
   }
 }
