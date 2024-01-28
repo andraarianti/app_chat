@@ -1,5 +1,7 @@
 
 import 'package:app_chat/domain/entities/ChatList.dart';
+import 'package:app_chat/domain/entities/ChatMessage.dart';
+import 'package:app_chat/domain/usecases/CreateMessage.dart';
 import 'package:app_chat/domain/usecases/GetChatList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
   TextEditingController _messageController = TextEditingController();
 
   late Future<ChatList> chatMessage;
+  late String _senderUsername;
 
   @override
   void initState() {
@@ -50,7 +53,6 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
                 ),
                 SizedBox(width: 5,),
                 CircleAvatar(
-                  backgroundImage: NetworkImage(""),
                   maxRadius: 20,
                 ),
                 SizedBox(width: 12,),
@@ -97,7 +99,7 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
                                   itemBuilder: (context, index){
                                     var _listMessages = message[index].text;
                                     var _listUsername = message[index].username;
-                                    print('CEK SIAPA : ${widget.username}');
+                                    _senderUsername = message[0].username;
 
                                     return Container(
                                       padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
@@ -113,11 +115,6 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
                                         ),
                                       ),
                                     );
-
-                                    // return ListTile(
-                                    //   title: Text(_listUsername),
-                                    //   subtitle: Text(_listMessages),
-                                    // );
                                   }
                                 ),
                             );
@@ -154,7 +151,7 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
                   SizedBox(width: 15,),
                   FloatingActionButton(
                     onPressed: (){
-
+                      sendMessage(_messageController.text, _senderUsername);
                     },
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     child: Icon(Icons.send,color: Colors.white,size: 24,),
@@ -167,5 +164,37 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
         ],
       ),
     );
+  }
+
+  void sendMessage(String _inputMessage, _senderUsername) async {
+    String id = widget.id;
+    print ('ID ROOM : ${id}');
+    String text = _messageController.text;
+    print ('MESSAGE : ${_messageController}');
+    String username = _senderUsername;
+    print ('USERNAME : ${username}');
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    print ('TIMESTAMP : ${timestamp}');
+
+    final sendMessageUseCase = CreateMessage();
+
+    Message newMessage = Message(
+      id: id,
+      username: username,
+      text: text,
+      timestamp: timestamp,
+    );
+
+    try {
+      await sendMessageUseCase.execute(newMessage);
+      _messageController.clear();
+      // Update chatRoomData after sending a new message
+      setState(() {
+        chatMessage = GetChatList().execute(id);
+      });
+    } catch (e) {
+      // Handle exception
+      print('Error sending message: $e');
+    }
   }
 }
