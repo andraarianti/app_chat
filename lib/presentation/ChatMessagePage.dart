@@ -1,4 +1,3 @@
-
 import 'package:app_chat/domain/entities/ChatList.dart';
 import 'package:app_chat/domain/entities/ChatMessage.dart';
 import 'package:app_chat/domain/usecases/CreateMessage.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 
-class ChatMessagePage extends StatefulWidget{
+class ChatMessagePage extends StatefulWidget {
   final String id;
   final String username;
 
@@ -17,7 +16,7 @@ class ChatMessagePage extends StatefulWidget{
   _ChatMessagePageState createState() => _ChatMessagePageState();
 }
 
-class _ChatMessagePageState extends State<ChatMessagePage>{
+class _ChatMessagePageState extends State<ChatMessagePage> {
   TextEditingController _messageController = TextEditingController();
 
   late Future<ChatList> chatMessage;
@@ -46,22 +45,33 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
             child: Row(
               children: <Widget>[
                 IconButton(
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Icon(Icons.arrow_back,color: Colors.black,),
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
                 ),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 CircleAvatar(
                   maxRadius: 20,
                 ),
-                SizedBox(width: 12,),
+                SizedBox(
+                  width: 12,
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("${widget.username}",style: TextStyle( fontSize: 16 ,fontWeight: FontWeight.w600),),
+                      Text(
+                        "${widget.username}",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ),
@@ -72,89 +82,114 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
       ),
       body: Column(
         children: [
-            Expanded(
-              child: Container(
-                color: Colors.grey[100],
-                  child: Column(
-                    children: [
-                      FutureBuilder<ChatList>(
-                        future: GetChatList().execute(widget.id),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            String errorMessage = snapshot.error?.toString() ?? 'Unknown error';
-                            return Center(child: Text('error on ChatListPage ${errorMessage}'));
-                          } else if (snapshot.hasData) {
-                            // Add a default return statement when snapshot.hasData is true but no specific widget to return.
-                            var data = snapshot.data!;
-                            var message = data.messages;
-                            return Expanded(
-                              child: ListView.builder
-                                (
-                                  itemCount: message.length,
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(top: 10,bottom: 10),
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index){
-                                    var _listMessages = message[index].text;
-                                    var _listUsername = message[index].username;
-                                    _senderUsername = message[0].username;
+          Expanded(
+            child: Container(
+              color: Colors.grey[100],
+              child: Column(
+                children: [
+                  FutureBuilder<ChatList>(
+                    future: GetChatList().execute(widget.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        String errorMessage =
+                            snapshot.error?.toString() ?? 'Unknown error';
+                        return Center(
+                            child:
+                                Text('error on ChatListPage ${errorMessage}'));
+                      } else if (snapshot.hasData) {
+                        // Add a default return statement when snapshot.hasData is true but no specific widget to return.
+                        var data = snapshot.data!;
+                        var message = data.messages;
+                        return Expanded(
+                          child: ListView.builder(
+                              itemCount: message.length,
+                              shrinkWrap: true,
+                              padding: EdgeInsets.only(top: 10, bottom: 10),
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                var _listMessages = message[index].text;
+                                var _listUsername = message[index].username;
+                                _senderUsername = message[0].username;
 
-                                    return Container(
-                                      padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-                                      child: Align(
-                                        alignment: (_listUsername != widget.username ? Alignment.topLeft:Alignment.topRight),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20),
-                                            color: (_listUsername != widget.username ? Colors.grey.shade200:Colors.purple[100]),
-                                          ),
-                                          padding: EdgeInsets.all(16),
-                                          child: Text(_listMessages, style: TextStyle(fontSize: 15),),
-                                        ),
+                                return Container(
+                                  padding: EdgeInsets.only(
+                                      left: 14, right: 14, top: 10, bottom: 10),
+                                  child: Align(
+                                    alignment: (_listUsername != _senderUsername
+                                        ? Alignment.topLeft
+                                        : Alignment.topRight),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: (_listUsername != _senderUsername
+                                            ? Colors.grey.shade200
+                                            : Colors.purple[100]),
                                       ),
-                                    );
-                                  }
-                                ),
-                            );
-                          } else {
-                            return Center(child: Text('Unknown Error'),);
-                          }
-                        },
-                      ),
-                    ],
+                                      padding: EdgeInsets.all(16),
+                                      child: Text(
+                                        _listMessages,
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        );
+                      } else {
+                        return Center(
+                          child: Text('Unknown Error'),
+                        );
+                      }
+                    },
                   ),
-                ),
+                ],
+              ),
             ),
+          ),
           Container(
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 children: [
                   FloatingActionButton(
-                    onPressed: (){},
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                    child: Icon(Icons.add,color: Colors.white,size: 24,),
+                    onPressed: () {},
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                     backgroundColor: Colors.purpleAccent,
                   ),
-                  SizedBox(width: 15,),
+                  SizedBox(
+                    width: 15,
+                  ),
                   Expanded(
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                          hintText: 'Type a message ....',
-                          border: InputBorder.none,
+                        hintText: 'Type a message ....',
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                  SizedBox(width: 15,),
+                  SizedBox(
+                    width: 15,
+                  ),
                   FloatingActionButton(
-                    onPressed: (){
+                    onPressed: () {
                       sendMessage(_messageController.text, _senderUsername);
                     },
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                    child: Icon(Icons.send,color: Colors.white,size: 24,),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                     backgroundColor: Colors.purpleAccent,
                   )
                 ],
@@ -168,13 +203,13 @@ class _ChatMessagePageState extends State<ChatMessagePage>{
 
   void sendMessage(String _inputMessage, _senderUsername) async {
     String id = widget.id;
-    print ('ID ROOM : ${id}');
+    print('ID ROOM : ${id}');
     String text = _messageController.text;
-    print ('MESSAGE : ${_messageController}');
+    print('MESSAGE : ${_messageController}');
     String username = _senderUsername;
-    print ('USERNAME : ${username}');
+    print('USERNAME : ${username}');
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    print ('TIMESTAMP : ${timestamp}');
+    print('TIMESTAMP : ${timestamp}');
 
     final sendMessageUseCase = CreateMessage();
 

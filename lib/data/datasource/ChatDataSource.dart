@@ -37,6 +37,7 @@ class RemoteChatDataSource implements ChatDataSource {
 
   Future<String> createMessage(Map<String, dynamic> message) async {
     try {
+      print('PRINT USERNAME - DATA SOURCE : ${message["username"]}');
       final response = await http.post(
         Uri.parse('${URL}/api/chat'), // Adjust the endpoint accordingly
         headers: <String, String>{
@@ -50,16 +51,13 @@ class RemoteChatDataSource implements ChatDataSource {
         }),
       );
 
-      print('RESPONSE CREATE MESSAGE - DATA SOURCE : $response');
-
       if (response.statusCode == 200) {
         print('Message sent successfully');
+        return response.body;
       } else {
         print('Failed to send message. Error code: ${response.statusCode}');
         throw Exception('Failed to send message');
       }
-
-      return response.body; // Return the API response body
     } catch (e) {
       print('Error sending message: $e');
       throw e;
